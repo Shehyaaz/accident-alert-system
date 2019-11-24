@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Accident and Hospital Location</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoLuH2EjnCEDuYrS3ywIW317mzGtsze3w"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+
+      var map,x,y,res, accidentmarker, marker;
+      var markers=[
+      		[12.939067,77.578546,"A.V.Hospital"],
+      		[12.946096,77.567519,"Shekhar Hospital"],
+      		[12.941447,77.567608,"BMS Hospital"],
+      		[12.936695,77.584341, "Apollo Hospital"]
+      ];
+        function loadmaps(){
+            $.getJSON("https://api.thingspeak.com/channels/920378/fields/1/last.json?api_key=ITXSEXFTGQDG1XNB", function(result){
+        	
+            res = result;
+            x=Number(res.field1);
+        });
+            $.getJSON("https://api.thingspeak.com/channels/920378/fields/2/last.json?api_key=ITXSEXFTGQDG1XNB", function(result){
+        	
+            res = result;
+            y=Number(res.field2);
+                
+        }).done(function() {
+            
+                initialize();
+    });
+            
+        }
+
+        window.setInterval(function(){
+        loadmaps();
+            }, 9000);
+            
+      function initialize() {
+      	var bounds = new google.maps.LatLngBounds();
+        var mapOptions = {
+          zoom: 18,
+          center: {lat: x, lng: y}
+        };
+        map = new google.maps.Map(document.getElementById('map'),
+            mapOptions);
+
+        accidentmarker = new google.maps.Marker({
+          position: {lat: x, lng: y},
+          map: map,
+          label: "A",
+          title: "Accident Location",
+          animation:  google.maps.Animation.BOUNCE,
+        });
+        // Loop through our array of markers & place each one on the map  
+    	for( i = 0; i < markers.length; i++ ) {
+        	var position = new google.maps.LatLng(markers[i][0], markers[i][1]);
+        		bounds.extend(position);
+        		marker = new google.maps.Marker({
+            	position: position,
+            	map: map,
+            	title: markers[i][2]
+        	});
+        	map.fitBounds(bounds);
+        }
+
+      }//end of initialize
+
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>
