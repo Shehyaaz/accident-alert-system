@@ -5,8 +5,8 @@
 #include <Adafruit_ADXL345_U.h>
 
 #define samples 10
-#define minVal -10
-#define MaxVal 10
+#define minVal -3
+#define MaxVal 3
 #define led 11
 #define buzzer 10
 
